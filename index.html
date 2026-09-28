@@ -1,0 +1,117 @@
+<!doctype html>
+<html lang="ro">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>FlyCenterHub S.R.</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+<link href="https://fonts.googleapis.com/css2?family=Great+Vibes&family=Cormorant+Garamond:wght@600;700&family=Plus+Jakarta+Sans:wght@400;500;600;700;800&display=swap" rel="stylesheet">
+<link rel="icon" href="data:image/svg+xml,<svg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 100 100'><text y='.9em' font-size='90'>✈️</text></svg>">
+<link rel="stylesheet" href="style.css?v=202609281152">
+</head>
+<body>
+<header class="top">
+  <div class="wrap top-inner">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">✈</span>
+      <div>
+        <h1 class="brand-name"><span class="script">FlyCenterHub</span> <span class="sr">S.R.</span></h1>
+        <p class="sub">Timișoara · Budapesta · Oradea · Cluj-Napoca</p>
+        <p class="sub fx" id="fx-line"></p>
+        <p class="sub fx" id="public-line"></p>
+      </div>
+    </div>
+    <div class="status-area">
+      <div id="status" class="status-pill" role="status" aria-live="polite">Se încarcă…</div>
+      <button id="btn-quick" class="btn ghost" title="Verificare rapidă (~2 minute): Aviasales și cele mai mici prețuri Ryanair spre toate destinațiile">⚡ Rapid</button>
+      <button id="btn-scan" class="btn" title="Scanare completă (~30 de minute): fiecare zi, pe toate rutele Wizz Air, Ryanair și Aviasales">Scanează acum</button>
+      <button id="btn-theme" class="btn ghost icon" title="Temă luminoasă / întunecată" aria-label="Schimbă tema">◐</button>
+    </div>
+  </div>
+  <div class="scanbar" id="scanbar" hidden><div class="fill"></div></div>
+</header>
+
+<main class="wrap">
+  <nav class="tabs" role="tablist">
+    <button role="tab" data-tab="deals" class="tab active">🔥 Oferte <span class="count" id="c-deals"></span></button>
+    <button role="tab" data-tab="search" class="tab">📅 Caută pe date <span class="count" id="c-search"></span></button>
+    <button role="tab" data-tab="lm" class="tab">⏰ Last minute <span class="count" id="c-lm"></span></button>
+    <button role="tab" data-tab="dest" class="tab">🌍 Toate destinațiile <span class="count" id="c-dest"></span></button>
+    <button role="tab" data-tab="exotic" class="tab">🌴 Exotice din Budapesta <span class="count" id="c-exotic"></span></button>
+    <button role="tab" data-tab="posts" class="tab">📰 Site-uri de oferte <span class="count" id="c-posts"></span></button>
+    <button role="tab" data-tab="help" class="tab">ℹ️ Cum funcționează</button>
+  </nav>
+
+  <section class="filters" id="filters">
+    <fieldset class="datebox" id="f-dates">
+      <legend>📅 Datele călătoriei</legend>
+      <label class="field"><span>Data plecării</span><input id="f-dep" type="date"></label>
+      <label class="field"><span>Data întoarcerii <em>(opțional)</em></span><input id="f-ret" type="date"></label>
+      <label class="field"><span>Flexibil</span>
+        <select id="f-flex">
+          <option value="0">Exact</option>
+          <option value="1">± 1 zi</option>
+          <option value="2">± 2 zile</option>
+          <option value="3">± 3 zile</option>
+          <option value="7">± 7 zile</option>
+        </select>
+      </label>
+      <button class="btn small ghost" id="f-dates-clear" type="button" hidden>✕ Șterge datele</button>
+      <p class="datebox-hint" id="f-dates-hint">Opțional: dacă ai date fixe, alege-le și toate listele se filtrează pe ele.</p>
+    </fieldset>
+    <div class="chips" id="f-origin" role="group" aria-label="Oraș de plecare"></div>
+    <div class="seg" id="f-trip" role="group" aria-label="Tip bilet">
+      <button data-v="ALL" class="on">Toate</button>
+      <button data-v="OW">Doar dus</button>
+      <button data-v="RT">Dus-întors</button>
+    </div>
+    <label class="field"><span>Preț max</span><input id="f-max" type="number" min="0" step="5" placeholder="€" inputmode="numeric"></label>
+    <label class="field grow"><span>Destinație</span><input id="f-q" type="search" placeholder="ex: Roma, Spania, LTN"></label>
+    <label class="field" id="f-sort-wrap"><span>Ordonează</span>
+      <select id="f-sort">
+        <option value="score">Cele mai bune oferte</option>
+        <option value="price">Cele mai ieftine</option>
+        <option value="date">Cele mai apropiate</option>
+        <option value="discount">Cea mai mare reducere</option>
+      </select>
+    </label>
+    <label class="field" id="f-days-wrap" hidden><span>Pleacă în max</span>
+      <select id="f-days">
+        <option value="3">3 zile</option>
+        <option value="7">7 zile</option>
+        <option value="10" selected>10 zile</option>
+        <option value="14">14 zile</option>
+        <option value="21">21 zile</option>
+      </select>
+    </label>
+  </section>
+
+  <div id="banner"></div>
+
+  <section id="tab-deals" class="panel"></section>
+  <section id="tab-search" class="panel" hidden></section>
+  <section id="tab-lm" class="panel" hidden></section>
+  <section id="tab-dest" class="panel" hidden></section>
+  <section id="tab-exotic" class="panel" hidden></section>
+  <section id="tab-posts" class="panel" hidden></section>
+  <section id="tab-help" class="panel prose" hidden></section>
+</main>
+
+<dialog id="route-modal" aria-labelledby="rm-title">
+  <div class="modal-head">
+    <div>
+      <h2 id="rm-title">Rută</h2>
+      <p class="sub" id="rm-sub"></p>
+    </div>
+    <button class="btn ghost icon" id="rm-close" aria-label="Închide">✕</button>
+  </div>
+  <div id="rm-body"></div>
+</dialog>
+
+<div id="tooltip" class="tooltip" role="tooltip" hidden></div>
+<script>window.STATIC_SITE = true; window.DATA_VERSION = "202609281152";</script>
+<script src="static-api.js?v=202609281152"></script>
+<script src="app.js?v=202609281152"></script>
+</body>
+</html>
